@@ -1,0 +1,85 @@
+version: '3.9'
+services:
+    nginx-proxy:
+        image: 'chishin/nginx-proxy-manager-zh:release'
+        container_name: Nginx-proxy
+        volumes:
+            - '/mnt/DKConfig/nginx-proxy/data:/data'
+            - '/mnt/DKConfig/nginx-proxy/letsencrypt:/etc/letsencrypt'
+        restart: always
+        ports:
+            - '80:80'
+            - '81:81'
+            - '443:443'
+        networks:        
+           headscale-network:
+              ipv4_address: 172.20.0.2
+
+    headscale:
+        image: 'headscale/headscale:0.22.3'
+        container_name: Headscale
+        volumes:
+            - '/mnt/DKConfig/headscale/config:/etc/headscale'
+            - '/mnt/DKConfig/headscale/data:/var/lib/headscale'
+        ports:
+            - '8090:8090'
+        command: headscale serve
+        restart: unless-stopped
+        cap_add:
+            - NET_ADMIN
+            - SYS_MODULE
+        sysctls:
+            - net.ipv4.ip_forward=1
+            - net.ipv6.conf.all.forwarding=1
+        networks:
+           headscale-network:
+              ipv4_address: 172.20.0.3
+
+    webui:
+        image: 'ifargle/headscale-webui:latest'
+        container_name: Headscale-webui
+        environment:
+            - TZ=Asia/Shanghai
+            - COLOR=blue-gray
+            - HS_SERVER=https://headscale.vipokk.top # Headscale 的域名
+            - SCRIPT_NAME=/admin # 如果跟 Headscale 共用一个域名则需要随意指定一个路径，如果不是则填写 /
+            - DOMAIN_NAME=https://headscale.vipokk.top # WebUI 的域名
+            - KEY=YourKeyBetweenQuotes # 使用“openssl rand -base64 32”生成 - 用于加密磁盘上的密钥。
+            - AUTH_TYPE=Basic
+            - LOG_LEVEL=info
+            - BASIC_AUTH_USER=admin
+            - BASIC_AUTH_PASS=admin
+        volumes:
+            - '/mnt/DKConfig/headscale/web-ui/:/data:rw'
+            - '/mnt/DKConfig/headscale/config:/etc/headscale/:ro'
+        ports:
+            - '5000:5000'
+        restart: unless-stopped
+
+        networks:
+           headscale-network:
+              ipv4_address: 172.20.0.4     
+
+    derper:
+        image: 'hausen1012/ip_derper'
+        container_name: Derper
+        restart: unless-stopped
+        ports:
+            - '34568:3478/udp'
+            - '34567:443'
+        environment:
+            - DERP_DOMAIN=derp.vipokk.top
+            - DERP_ADDR=:34567
+            - DERP_VERIFY_CLIENTS=true
+    # 映射宿主机上的 tailscaled 进程用于避免服务被白嫖
+        volumes:
+            - '/var/run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock'
+
+        networks:
+           headscale-network:
+              ipv4_address: 172.20.0.5
+
+
+networks:
+  headscale-network:
+    external: true
