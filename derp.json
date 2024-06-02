@@ -10,9 +10,9 @@
           "RegionID": 901,
           "DERPPort": 34567,
           "STNUPPort": 34568,
-          "HostName": "38.207.130.215",
-          "IPv4": "38.207.130.215",
-          "IPv6": "2a12:f8c1:50:2::344",
+          "HostName": "",
+          "IPv4": "",
+          "IPv6": "",
           "InsecureForTests": true
         }
       ]
@@ -28,9 +28,9 @@
           "RegionID": 902,
           "DERPPort": 34567,
           "STNUPPort": 34568,
-          "HostName": "103.76.128.108",
-          "IPv4": "103.76.128.108",
-          "IPv6": "2a12:f8c1:50:2:c8b6:fdb:2f8e:2eb3",
+          "HostName": "",
+          "IPv4": "",
+          "IPv6": "",
           "InsecureForTests": true
         }
       ]
@@ -46,9 +46,9 @@
           "RegionID": 903,
           "DERPPort": 34567,
           "STNUPPort": 34568,
-          "HostName": "89.213.164.248",
-          "IPv4": "89.213.164.248",
-          "IPv6": "2602:fa4f:300:0:72eb:3afd:93f7:4a9c",
+          "HostName": "",
+          "IPv4": "",
+          "IPv6": "",
           "InsecureForTests": true
         }
       ]
